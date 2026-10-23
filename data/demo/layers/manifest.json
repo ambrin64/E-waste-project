@@ -1,0 +1,34 @@
+{
+  "dataset_id": "bengaluru-demo-v1",
+  "name": "Bengaluru E-Waste Planner demonstration data",
+  "status": "synthetic_demo",
+  "synthetic": true,
+  "source": "Generated deterministically by this project; no official spatial source",
+  "source_year": null,
+  "licence": "CC0-1.0 (synthetic generated data)",
+  "coordinate_reference_system": "EPSG:4326",
+  "layers": {
+    "wards": "wards.geojson",
+    "roads": "roads.geojson",
+    "constraints": "constraints.geojson",
+    "candidates": "candidates.geojson"
+  },
+  "generation_seed": 20260617,
+  "assumptions": [
+    "All shapes, locations and attributes are artificial and are not official Bengaluru boundaries, roads, facilities, population or environmental constraints.",
+    "Any synthetic demand values are illustrative planning inputs, not observed or official waste generation.",
+    "SYN-C02 carries a synthetic hard_allowed=false flag to demonstrate configurable exclusion behavior.",
+    "No regulatory buffer distance is encoded as a fact; any demonstration exclusion distance must be exposed as an editable assumption."
+  ],
+  "validation": {
+    "feature_schema": "demo-schema.json",
+    "expected_geometry_crs": "EPSG:4326",
+    "required_feature_properties": [
+      "layer",
+      "label",
+      "data_status",
+      "synthetic"
+    ]
+  },
+  "generation_method": "fixed deterministic coordinates and attributes; seed recorded for fixture versioning; no random sampling"
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/bengaluru-ewaste/demo-schema.json",
+  "title": "Bengaluru E-Waste Planner synthetic demo feature collection",
+  "description": "Schema for deterministic, explicitly synthetic demonstration features. Never represents official Bengaluru locations or measurements.",
+  "type": "object",
+  "required": ["type", "name", "crs", "features"],
+  "properties": {
+    "type": { "const": "FeatureCollection" },
+    "name": { "type": "string" },
+    "crs": { "const": "EPSG:4326" },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "id", "geometry", "properties"],
+        "properties": {
+          "type": { "const": "Feature" },
+          "id": { "type": "string" },
+          "geometry": {
+            "type": "object",
+            "required": ["type", "coordinates"],
+            "properties": {
+              "type": { "enum": ["Point", "LineString", "Polygon", "MultiPolygon"] },
+              "coordinates": { "type": "array" }
+            }
+          },
+          "properties": {
+            "type": "object",
+            "required": ["layer", "label", "data_status", "synthetic"],
+            "properties": {
+              "layer": { "enum": ["ward_demo", "road_demo", "demand_demo", "candidate_demo", "environment_demo"] },
+              "label": { "type": "string" },
+              "data_status": { "const": "synthetic_demo" },
+              "synthetic": { "const": true },
+              "source_year": { "type": ["integer", "null"] },
+              "licence": { "const": "CC0-1.0 (synthetic generated data)" },
+              "population_estimate": { "type": ["number", "null"], "minimum": 0 },
+              "demand_tonnes_per_year": { "type": ["number", "null"], "minimum": 0 },
+              "candidate_type": { "enum": ["collection_centre", "dismantling_facility", null] }
+            },
+            "additionalProperties": true
+          }
+        }
+      }
+    }
+  }
+}

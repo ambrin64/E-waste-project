@@ -1,0 +1,9 @@
+{
+"type": "FeatureCollection",
+"name": "constraints",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "constraint_id": "SYN-E1", "constraint_type": "synthetic_waterbody", "data_status": "synthetic_demo", "synthetic": true }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 77.535, 12.948 ], [ 77.538, 12.948 ], [ 77.538, 12.952 ], [ 77.535, 12.952 ], [ 77.535, 12.948 ] ] ] } },
+{ "type": "Feature", "properties": { "constraint_id": "SYN-E2", "constraint_type": "synthetic_sensitive_use", "data_status": "synthetic_demo", "synthetic": true }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 77.575, 12.948 ], [ 77.578, 12.948 ], [ 77.578, 12.952 ], [ 77.575, 12.952 ], [ 77.575, 12.948 ] ] ] } }
+]
+}

@@ -1,0 +1,15 @@
+{
+"type": "FeatureCollection",
+"name": "candidates",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "candidate_id": "SYN-C01", "candidate_type": "collection_centre", "demand_access": 92, "road_access": 82, "land_cost": 38, "environmental_risk": 12, "industrial_compatibility": 65, "hard_allowed": true, "data_status": "synthetic_demo", "synthetic": true }, "geometry": { "type": "Point", "coordinates": [ 77.505, 12.945 ] } },
+{ "type": "Feature", "properties": { "candidate_id": "SYN-C02", "candidate_type": "collection_centre", "demand_access": 78, "road_access": 91, "land_cost": 55, "environmental_risk": 8, "industrial_compatibility": 70, "hard_allowed": false, "data_status": "synthetic_demo", "synthetic": true }, "geometry": { "type": "Point", "coordinates": [ 77.515, 12.955 ] } },
+{ "type": "Feature", "properties": { "candidate_id": "SYN-C03", "candidate_type": "collection_centre", "demand_access": 86, "road_access": 74, "land_cost": 31, "environmental_risk": 16, "industrial_compatibility": 58, "hard_allowed": true, "data_status": "synthetic_demo", "synthetic": true }, "geometry": { "type": "Point", "coordinates": [ 77.525, 12.945 ] } },
+{ "type": "Feature", "properties": { "candidate_id": "SYN-C04", "candidate_type": "collection_centre", "demand_access": 65, "road_access": 88, "land_cost": 43, "environmental_risk": 9, "industrial_compatibility": 62, "hard_allowed": true, "data_status": "synthetic_demo", "synthetic": true }, "geometry": { "type": "Point", "coordinates": [ 77.545, 12.955 ] } },
+{ "type": "Feature", "properties": { "candidate_id": "SYN-C05", "candidate_type": "collection_centre", "demand_access": 73, "road_access": 68, "land_cost": 25, "environmental_risk": 11, "industrial_compatibility": 55, "hard_allowed": true, "data_status": "synthetic_demo", "synthetic": true }, "geometry": { "type": "Point", "coordinates": [ 77.555, 12.945 ] } },
+{ "type": "Feature", "properties": { "candidate_id": "SYN-C06", "candidate_type": "collection_centre", "demand_access": 90, "road_access": 78, "land_cost": 62, "environmental_risk": 7, "industrial_compatibility": 80, "hard_allowed": true, "data_status": "synthetic_demo", "synthetic": true }, "geometry": { "type": "Point", "coordinates": [ 77.565, 12.955 ] } },
+{ "type": "Feature", "properties": { "candidate_id": "SYN-D01", "candidate_type": "dismantling_facility", "demand_access": 55, "road_access": 76, "land_cost": 48, "environmental_risk": 15, "industrial_compatibility": 94, "hard_allowed": true, "data_status": "synthetic_demo", "synthetic": true }, "geometry": { "type": "Point", "coordinates": [ 77.585, 12.945 ] } },
+{ "type": "Feature", "properties": { "candidate_id": "SYN-D02", "candidate_type": "dismantling_facility", "demand_access": 64, "road_access": 84, "land_cost": 65, "environmental_risk": 10, "industrial_compatibility": 88, "hard_allowed": true, "data_status": "synthetic_demo", "synthetic": true }, "geometry": { "type": "Point", "coordinates": [ 77.595, 12.955 ] } }
+]
+}
