@@ -13,8 +13,12 @@ DEFAULTS = {
     "daily_throughput_tonnes_per_day": 5.0,
     "operating_days_per_year": 300,
     "storage_duration_days": 7.0,
-    "plot_width_m": 80.0,
-    "plot_depth_m": 60.0,
+    # Editable 40 x 40 m example envelope (1600 m2), near the 1500 m2 area
+    # implied by 5 TPD x 300 m2/TPD in a published clearance submission
+    # citing CPCB's 2016 implementation guidelines. Not a universal or
+    # engineering-approved site recommendation.
+    "plot_width_m": 40.0,
+    "plot_depth_m": 40.0,
     "receiving_area_m2_per_tpd": 0.8,
     "inspection_area_m2_per_tpd": 0.5,
     "dismantling_area_m2_per_tpd": 3.0,

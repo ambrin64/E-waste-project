@@ -85,6 +85,8 @@ The area-based layout represents each zone as a square whose side is the square 
 
 The full-plot map preserves the plot scale. An enlarged detail view and an additional PDF page improve zone legibility while retaining the same metre coordinates and dimensions. Circulation is represented as one conceptual zone; it does not depict distributed aisles or access routes. Unallocated area is the configured plot area minus all five process areas and the circulation area, counted once.
 
+The default plot envelope is now 40 m x 40 m (1,600 m2) for the 5 tonnes/day example, down from 80 m x 60 m. It is a rounded illustrative reference informed by a published environmental-clearance submission citing 300 m2 per tonnes/day of dismantling capacity in CPCB's 2016 implementation guidance (1,500 m2 at 5 tonnes/day). This is not a universal minimum, site recommendation, or compliance determination. Users can edit both plot dimensions; suitability of any real site requires project-specific engineering and authority review. Source: [published clearance submission](https://environmentclearance.nic.in/writereaddata/Online/EDS/0_0_23_Dec_2022_1456255531ADSReplyKhopoli.pdf).
+
 ## Important API endpoints
 
 All paths below are under `/api/v1`:

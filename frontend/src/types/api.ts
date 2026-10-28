@@ -20,6 +20,24 @@ export type FeatureCollection = {
   }>;
 };
 
+export type WardFeatureCollection = {
+  type: 'FeatureCollection';
+  features: Array<{
+    type: 'Feature';
+    id?: string;
+    geometry: { type: string; coordinates: unknown };
+    properties: Record<string, unknown>;
+  }>;
+};
+
+export type CityInfo = {
+  city_id: string;
+  name: string;
+  boundary: { source: string; source_url: string; source_year: number | null; licence: string; crs: string; feature_count: number; status: string };
+  population: { source: string; source_url: string; source_year: number | null; licence: string; status: string; limitations?: string } | null;
+  analysis_availability: Record<string, string>;
+};
+
 export type SuitabilityResponse = {
   facility_type: FacilityType;
   data_status: string;

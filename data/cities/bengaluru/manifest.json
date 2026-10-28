@@ -1,0 +1,31 @@
+{
+  "city_id": "bengaluru",
+  "name": "Greater Bengaluru",
+  "boundary": {
+    "source": "OpenCity / Oorvani Foundation, Greater Bengaluru Authority final wards",
+    "source_url": "https://bharatlas.com/view/wards_bengaluru_gba",
+    "download_url": "https://pub-0429b8e3b5a946e69ea007df844a6f1c.r2.dev/admin/wards-bengaluru-gba/wards_bengaluru_gba.geojson",
+    "source_year": 2025,
+    "licence": "ODbL-1.0",
+    "crs": "EPSG:4326 (GeoJSON longitude/latitude)",
+    "feature_count": 369,
+    "status": "sourced_open_data",
+    "retrieved": "2026-10-28"
+  },
+  "population": {
+    "source": "2011 Census population attributes included in the GBA 2025 ward map",
+    "source_url": "https://data.opencity.in/dataset/gba-wards-delimitation-2025",
+    "source_year": 2011,
+    "licence": "ODbL-1.0",
+    "status": "historical_attribute",
+    "limitations": "Historical ward population attributes are shown for context only and are not e-waste demand. Ward boundaries are from 2025; no ward-level crosswalk validation is asserted."
+  },
+  "analysis_availability": {
+    "ward_boundaries": "sourced_open_data",
+    "ward_population": "historical_attribute",
+    "roads": "synthetic_demo_only",
+    "environmental_constraints": "synthetic_demo_only",
+    "candidate_sites": "synthetic_demo_only",
+    "e_waste_demand": "synthetic_demo_only"
+  }
+}

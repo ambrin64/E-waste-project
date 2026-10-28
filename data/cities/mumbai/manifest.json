@@ -1,0 +1,35 @@
+{
+  "city_id": "mumbai",
+  "name": "Greater Mumbai (BMC)",
+  "boundary": {
+    "source": "OpenCity / Oorvani Foundation, BMC administrative wards",
+    "source_url": "https://bharatlas.com/view/wards_mumbai",
+    "download_url": "https://pub-0429b8e3b5a946e69ea007df844a6f1c.r2.dev/admin/wards-mumbai/wards_mumbai.geojson",
+    "source_year": null,
+    "licence": "ODbL-1.0",
+    "crs": "EPSG:4326 (GeoJSON longitude/latitude)",
+    "feature_count": 24,
+    "status": "sourced_open_data",
+    "retrieved": "2026-10-28",
+    "limitations": "The source layer identifies 24 administrative wards; its boundary vintage is not stated in the source catalogue."
+  },
+  "population": {
+    "source": "Brihanmumbai Municipal Corporation, Civic Diary 2025, wardwise mid-year population estimate for 2023",
+    "source_url": "https://portal.mcgm.gov.in/irj/portal/anonymous/qlCivicDemographics",
+    "document_url": "https://crmapp.mcgm.gov.in/irj/go/km/docs/documents/HomePage%20Data/BMC%20Diary/BMC_English%20Diary_2025_Website.pdf",
+    "source_year": 2023,
+    "published_city_total": 13014390,
+    "sum_of_ward_values": 13014389,
+    "licence": "Publicly published municipal statistics; reuse terms not explicitly stated",
+    "status": "official_estimate",
+    "limitations": "Population is a municipal estimate, not measured e-waste generation and not a population-to-demand conversion. The 24 published ward values sum to 13,014,389, one person below the published city aggregate of 13,014,390; the app displays the sum of ward values."
+  },
+  "analysis_availability": {
+    "ward_boundaries": "sourced_open_data",
+    "ward_population": "official_estimate",
+    "roads": "not_loaded",
+    "environmental_constraints": "not_loaded",
+    "candidate_sites": "not_loaded",
+    "e_waste_demand": "not_loaded"
+  }
+}

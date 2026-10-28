@@ -40,6 +40,9 @@ def test_facility_defaults_plan_and_layout_pdf_are_dimension_aware():
     defaults = client.get("/api/v1/facility-design/defaults")
     assert defaults.status_code == 200
     inputs = defaults.json()["defaults"]
+    assert inputs["plot_width_m"] == 40
+    assert inputs["plot_depth_m"] == 40
+    assert "not an approval" in defaults.json()["warning"]
     plan = client.post("/api/v1/facility-design/plan", json=inputs)
     assert plan.status_code == 200, plan.text
     result = plan.json()
@@ -50,7 +53,7 @@ def test_facility_defaults_plan_and_layout_pdf_are_dimension_aware():
     assert {zone["zone_id"]: zone["area_m2"] for zone in result["zones"]} == pytest.approx(expected_areas)
     assert result["process_area_m2"] == pytest.approx(112.5)
     assert result["required_area_m2"] == pytest.approx(140.625)
-    assert result["remaining_area_m2"] == pytest.approx(4659.375)
+    assert result["remaining_area_m2"] == pytest.approx(1459.375)
     for zone in result["zones"]:
         assert zone["x_m"] >= 0 and zone["y_m"] >= 0
         assert zone["x_m"] + zone["width_m"] <= result["envelope"]["width_m"] + 1e-8
@@ -119,8 +122,9 @@ def test_facility_pdf_contains_corrected_zone_dimensions_and_scale_grid():
     pdf = facility_layout_pdf(layout)
     assert_valid_pdf(pdf)
     # Filled vector rectangles are emitted from each returned x/y/width/depth.
-    expected_width = f"{layout['zones'][0]['width_m'] * min(480 / 80, 550 / 60)}"
-    expected_height = f"{layout['zones'][0]['depth_m'] * min(480 / 80, 550 / 60)}"
+    pdf_scale = min(480 / layout["envelope"]["width_m"], 550 / layout["envelope"]["depth_m"])
+    expected_width = f"{layout['zones'][0]['width_m'] * pdf_scale}"
+    expected_height = f"{layout['zones'][0]['depth_m'] * pdf_scale}"
     assert f"{expected_width} {expected_height} re B".encode() in pdf
     assert b"Process 112.5 m2; circulation 28.1 m2" in pdf
     assert b"ENLARGED ZONE DETAIL - SAME METRE GEOMETRY" in pdf

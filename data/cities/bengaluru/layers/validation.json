@@ -1,0 +1,19 @@
+{
+  "source_file": "wards_source.geojson",
+  "output_crs": "EPSG:4326",
+  "feature_count": 369,
+  "unique_ward_ids": 369,
+  "source_coordinates_reversed": true,
+  "coordinate_processing": "Swapped source x/y to longitude/latitude before writing GeoJSON",
+  "invalid_source_geometries_repaired": [
+    "5-20",
+    "4-7",
+    "4-43",
+    "1-27",
+    "4-61",
+    "4-24",
+    "4-20",
+    "5-96"
+  ],
+  "repair_method": "Shapely make_valid; polygon components retained for map display; source geometry file remains unchanged"
+}

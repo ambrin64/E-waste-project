@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import uuid
+from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Response
 
@@ -24,11 +25,41 @@ from app.reporting.pdf import facility_layout_pdf
 from app.reporting.reports import report_csv, report_pdf
 
 router = APIRouter(prefix="/api/v1")
+CITY_DATA_DIR = Path(__file__).resolve().parents[3] / "data" / "cities"
 
 
 @router.get("/health", tags=["health"])
 def health():
     return {"status": "ok", "api_version": "v1"}
+
+
+@router.get("/cities", tags=["datasets"], summary="List cities with sourced ward boundaries",
+            description="City records include ward-boundary provenance and population attributes where available. This does not imply that candidate, road, constraint, or e-waste-demand layers are available for every city.")
+def cities():
+    items = []
+    for manifest_path in sorted(CITY_DATA_DIR.glob("*/manifest.json")):
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        items.append({key: manifest.get(key) for key in (
+            "city_id", "name", "boundary", "population", "analysis_availability")})
+    return {"items": items}
+
+
+@router.get("/cities/{city_id}/wards", tags=["datasets"], summary="Get sourced city wards as GeoJSON",
+            description="Returns locally stored, source-attributed municipal ward polygons in EPSG:4326. Population attributes retain their own year and source.")
+def city_wards(city_id: str):
+    if not city_id.replace("-", "").isalnum():
+        raise HTTPException(status_code=404, detail="Unknown city")
+    path = CITY_DATA_DIR / city_id / "layers" / "wards.geojson"
+    manifest_path = CITY_DATA_DIR / city_id / "manifest.json"
+    if not path.is_file() or not manifest_path.is_file():
+        raise HTTPException(status_code=404, detail="City ward dataset not found")
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=500, detail="City ward dataset could not be read") from exc
+    if data.get("type") != "FeatureCollection":
+        raise HTTPException(status_code=500, detail="City ward data is not a GeoJSON FeatureCollection")
+    return data
 
 
 @router.get("/datasets", tags=["datasets"], summary="List loaded datasets",
@@ -165,7 +196,7 @@ def facility_design_defaults():
     return {"defaults": DEFAULTS, "zone_labels": {
         "receiving": "Receiving", "inspection": "Inspection", "dismantling": "Dismantling",
         "segregated_storage": "Segregated storage", "dispatch": "Dispatch", "circulation": "Circulation"},
-        "status": "estimated_assumptions", "warning": "Conceptual planning only; these sizing factors are estimates, not engineering standards."}
+        "status": "estimated_assumptions", "warning": "Conceptual planning only. The editable 40 x 40 m default plot is a rounded 1,600 m2 example for the 5 tonnes/day case, informed by a published clearance submission citing a 300 m2 per tonnes/day dismantling-area reference (1,500 m2 at 5 tonnes/day). This is a planning reference, not an approval, universal minimum, or engineering standard; check the actual process and site."}
 
 
 @router.post("/facility-design/plan", tags=["facility design"], summary="Calculate and layout conceptual facility zones",

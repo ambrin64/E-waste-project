@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { calculateFacilityDesign, downloadFacilityLayout, fetchFacilityDesignDefaults } from '../../lib/api';
 import type { FacilityDesign, FacilityDesignInput } from '../../types/api';
 
@@ -23,29 +23,53 @@ export function FacilityDesigner() {
   const [warning, setWarning] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const calculationId = useRef(0);
+  const calculationTimer = useRef<number | null>(null);
 
   useEffect(() => {
     let active = true;
-    fetchFacilityDesignDefaults().then(async ({ defaults, warning: note }) => {
+    fetchFacilityDesignDefaults().then(({ defaults, warning: note }) => {
       if (!active) return;
       setInputs(defaults); setWarning(note); setLoading(true);
-      try { setDesign(await calculateFacilityDesign(defaults)); }
-      catch (cause) { if (active) setError((cause as Error).message); }
-      finally { if (active) setLoading(false); }
     }).catch((cause: Error) => { if (active) setError(cause.message); });
     return () => { active = false; };
   }, []);
 
+  const recalculate = async (nextInputs: FacilityDesignInput) => {
+    const requestId = ++calculationId.current;
+    setLoading(true); setError('');
+    try {
+      const nextDesign = await calculateFacilityDesign(nextInputs);
+      if (requestId === calculationId.current) setDesign(nextDesign);
+    } catch (cause) {
+      if (requestId === calculationId.current) {
+        setDesign(null);
+        setError((cause as Error).message);
+      }
+    } finally {
+      if (requestId === calculationId.current) setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!inputs) return;
+    calculationTimer.current = window.setTimeout(() => { void recalculate(inputs); }, 300);
+    return () => {
+      if (calculationTimer.current !== null) window.clearTimeout(calculationTimer.current);
+      calculationId.current += 1;
+    };
+  }, [inputs]);
+
   const update = (key: keyof FacilityDesignInput, value: number) => {
+    setDesign(null);
+    setLoading(true);
     setInputs((current) => current ? { ...current, [key]: value } : current);
   };
 
   const calculate = async () => {
     if (!inputs) return;
-    setLoading(true); setError('');
-    try { setDesign(await calculateFacilityDesign(inputs)); }
-    catch (cause) { setDesign(null); setError((cause as Error).message); }
-    finally { setLoading(false); }
+    if (calculationTimer.current !== null) window.clearTimeout(calculationTimer.current);
+    await recalculate(inputs);
   };
 
   const exportPdf = async () => {
@@ -59,7 +83,7 @@ export function FacilityDesigner() {
 
   return <section className="facility-designer" id="facility-design">
     <div className="section-heading"><div><span className="eyebrow">FACILITY CONCEPT / 03</span><h2>Size and arrange process zones</h2>
-      <p>Change the operating assumptions and recalculate a dimension-aware conceptual layout.</p></div>
+      <p>Change an assumption to refresh the dimension-aware conceptual layout and zone table automatically.</p></div>
       <span className="concept-pill">Conceptual · estimates only</span></div>
     {warning && <p className="inline-note">{warning}</p>}
     <div className="design-grid">
@@ -112,8 +136,15 @@ export function FacilityDesigner() {
               <text x="0.5" y={detailDepth + 1.35} textAnchor="middle" fontSize="0.32" fill="#31473a">1 m scale</text>
             </svg>
           </div>
-          <div className="zone-legend">{design.zones.map((zone, index) => <div key={zone.zone_id}><span style={{ background: colors[index] }}>{index + 1}</span>
-            <strong>{zone.label}</strong><small>{zone.width_m.toFixed(2)} m × {zone.depth_m.toFixed(2)} m · {zone.area_m2.toFixed(1)} m²</small></div>)}</div>
+          <div className="zone-table-wrap">
+            <table className="zone-table">
+              <thead><tr><th scope="col">#</th><th scope="col">Process zone</th><th scope="col">Width (m)</th><th scope="col">Depth (m)</th><th scope="col">Area (m²)</th></tr></thead>
+              <tbody>{design.zones.map((zone, index) => <tr key={zone.zone_id}>
+                <td><span className="zone-table-marker" style={{ background: colors[index] }}>{index + 1}</span></td>
+                <th scope="row">{zone.label}</th><td>{zone.width_m.toFixed(2)}</td><td>{zone.depth_m.toFixed(2)}</td><td>{zone.area_m2.toFixed(1)}</td>
+              </tr>)}</tbody>
+            </table>
+          </div>
           <p className="inline-note">Envelope {design.envelope.width_m} m × {design.envelope.depth_m} m; {design.remaining_area_m2.toFixed(1)} m² unallocated. Zones remain inside the configured envelope.</p>
           <p className="inline-note area-summary">Process zones: {(design.process_area_m2 ?? (design.required_area_m2 - (design.circulation_area_m2 ?? design.zones.find((zone) => zone.zone_id === 'circulation')?.area_m2 ?? 0))).toFixed(1)} m² · circulation (counted once): {(design.circulation_area_m2 ?? design.zones.find((zone) => zone.zone_id === 'circulation')?.area_m2 ?? 0).toFixed(1)} m² · unallocated: {design.remaining_area_m2.toFixed(1)} m² of {design.envelope_area_m2.toFixed(1)} m².</p>
           <p className="layout-circulation-note">Circulation is represented as one conceptual zone based on the configured fraction; it does not depict distributed aisles or access routes.</p>

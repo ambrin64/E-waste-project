@@ -1,4 +1,4 @@
-import type { FacilityDesign, FacilityDesignInput, FacilityType, FeatureCollection, ScenarioInputs, ScenarioRun, SuitabilityResponse } from '../types/api';
+import type { CityInfo, FacilityDesign, FacilityDesignInput, FacilityType, FeatureCollection, ScenarioInputs, ScenarioRun, SuitabilityResponse, WardFeatureCollection } from '../types/api';
 
 export const API_ROOT = import.meta.env.VITE_API_ROOT ?? 'http://localhost:8000/api/v1';
 
@@ -12,6 +12,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const fetchLayer = (layer: string) => request<FeatureCollection>(`/datasets/${layer}/features`);
+export const fetchCities = () => request<{ items: CityInfo[] }>('/cities');
+export const fetchCityWards = (cityId: string) => request<WardFeatureCollection>(`/cities/${encodeURIComponent(cityId)}/wards`);
 
 export const evaluateSuitability = (facilityType: FacilityType, constraintBufferM: number) =>
   request<SuitabilityResponse>('/suitability/evaluate', {

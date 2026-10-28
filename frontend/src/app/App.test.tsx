@@ -17,7 +17,12 @@ describe('planner results', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
       let body: Record<string, unknown>;
-      if (url.includes('suitability')) body = {
+      if (url.endsWith('/cities')) body = { items: [
+        { city_id: 'bengaluru', name: 'Greater Bengaluru', boundary: { source: 'OpenCity', source_url: 'https://example.test', source_year: 2025, licence: 'ODbL-1.0', crs: 'EPSG:4326', feature_count: 369, status: 'sourced_open_data' }, population: { source: 'Census 2011', source_url: 'https://example.test', source_year: 2011, licence: 'ODbL-1.0', status: 'historical_attribute' }, analysis_availability: {} },
+        { city_id: 'mumbai', name: 'Greater Mumbai (BMC)', boundary: { source: 'OpenCity', source_url: 'https://example.test', source_year: null, licence: 'ODbL-1.0', crs: 'EPSG:4326', feature_count: 24, status: 'sourced_open_data' }, population: { source: 'BMC Civic Diary', source_url: 'https://example.test', source_year: 2023, licence: 'Municipal publication', status: 'official_estimate' }, analysis_availability: {} },
+      ] };
+      else if (url.includes('/cities/')) body = { type: 'FeatureCollection', features: [{ type: 'Feature', id: 'ward1', geometry: { type: 'Polygon', coordinates: [[[77.5,12.9],[77.6,12.9],[77.6,13],[77.5,13],[77.5,12.9]]] }, properties: { ward_id: 'ward1', label: 'Ward 1', population_estimate: 100, population_year: url.includes('mumbai') ? 2023 : 2011, synthetic: false } }] };
+      else if (url.includes('suitability')) body = {
         facility_type: 'collection_centre', data_status: 'synthetic_demo',
         criteria_directions: {}, weights: { demand_access: 1 }, ahp: null, assumptions: ['Synthetic fixture'],
         geojson: { type: 'FeatureCollection', features: [feature('SYN-C01', true, 88.2, 1), feature('SYN-C02', false, 62.1, null, ['hard rule'])] },
@@ -27,7 +32,7 @@ describe('planner results', () => {
         dismantling_fixed_costs: {}, dismantling_capacities: {} };
       else if (url.includes('facility-design/defaults')) body = { warning: 'Estimated factors', defaults: {
         daily_throughput_tonnes_per_day: 5, operating_days_per_year: 300, storage_duration_days: 7,
-        plot_width_m: 80, plot_depth_m: 60, receiving_area_m2_per_tpd: .8, inspection_area_m2_per_tpd: .5,
+        plot_width_m: 40, plot_depth_m: 40, receiving_area_m2_per_tpd: .8, inspection_area_m2_per_tpd: .5,
         dismantling_area_m2_per_tpd: 3, storage_area_m2_per_stored_tonne: 2.5,
         dispatch_area_m2_per_tpd: .7, circulation_fraction: .25 } };
       else if (url.includes('facility-design/plan')) {
@@ -79,7 +84,7 @@ describe('planner results', () => {
   it('re-runs suitability when the facility model changes', async () => {
     render(<App />);
     await screen.findByText('SYN-C01');
-    await userEvent.selectOptions(screen.getByRole('combobox'), 'dismantling_facility');
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Facility model' }), 'dismantling_facility');
     await waitFor(() => expect(fetch).toHaveBeenCalledWith(expect.stringContaining('suitability/evaluate'), expect.objectContaining({ body: expect.stringContaining('dismantling_facility') })));
   });
 
@@ -90,7 +95,6 @@ describe('planner results', () => {
     const throughput = screen.getByRole('spinbutton', { name: 'Daily throughput (tonnes/day)' });
     await user.clear(throughput);
     await user.type(throughput, '8');
-    await user.click(screen.getByRole('button', { name: 'Calculate facility layout' }));
     expect(await screen.findByText('2400.0 t/year')).toBeInTheDocument();
     await user.clear(screen.getByRole('spinbutton', { name: 'Storage duration (days)' }));
     await user.type(screen.getByRole('spinbutton', { name: 'Storage duration (days)' }), '9');
@@ -98,7 +102,6 @@ describe('planner results', () => {
     await user.type(screen.getByRole('spinbutton', { name: 'Plot width (m)' }), '90');
     await user.clear(screen.getByRole('spinbutton', { name: 'Plot depth (m)' }));
     await user.type(screen.getByRole('spinbutton', { name: 'Plot depth (m)' }), '70');
-    await user.click(screen.getByRole('button', { name: 'Calculate facility layout' }));
     expect(await screen.findByText('72.0 t')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: /within 90 by 70 metre plot/ })).toBeInTheDocument();
     expect(screen.getByRole('img', { name: /enlarged conceptual zone detail/i })).toBeInTheDocument();
@@ -127,5 +130,18 @@ describe('planner results', () => {
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('scenarios/run'), expect.objectContaining({
       body: expect.stringContaining('"baseline_facility_ids":["SYN-C01"]'),
     }));
+  });
+
+  it('switches to sourced Mumbai ward view and does not request Bengaluru suitability', async () => {
+    render(<App />);
+    const user = userEvent.setup();
+    await screen.findByText('SYN-C01');
+    const suitabilityCallsBefore = vi.mocked(fetch).mock.calls.filter(([url]) => String(url).includes('suitability/evaluate')).length;
+    await user.selectOptions(screen.getByRole('combobox', { name: 'City / boundary' }), 'mumbai');
+    expect(await screen.findByText('Mumbai ward map')).toBeInTheDocument();
+    expect(screen.getByText('24 ward polygons | vintage not stated')).toBeInTheDocument();
+    expect(screen.getByText(/site ranking and network simulation are unavailable/i)).toBeInTheDocument();
+    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/cities/mumbai/wards'), undefined);
+    expect(vi.mocked(fetch).mock.calls.filter(([url]) => String(url).includes('suitability/evaluate'))).toHaveLength(suitabilityCallsBefore);
   });
 });
